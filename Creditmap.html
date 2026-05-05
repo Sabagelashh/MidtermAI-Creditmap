@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CreditMap – Transfer Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+
+    /* =============================================
+       resets & base
+    ============================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #f0f4ff;
+      color: #1e2540;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* =============================================
+       top nav / header bar
+    ============================================= */
+    .navbar {
+      background: #fff;
+      border-bottom: 2px solid #dde4ff;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .navbar .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: #4361ee;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      color: #4361ee;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text span {
+      color: #1e2540;
+    }
+
+    .navbar .tagline {
+      margin-left: 6px;
+      font-size: 12px;
+      color: #8890b5;
+      padding: 2px 10px;
+      border: 1px solid #dde4ff;
+      border-radius: 20px;
+    }
+
+    /* =============================================
+       page container
+    ============================================= */
+    .container {
+      max-width: 960px;
+      margin: 36px auto;
+      padding: 0 20px 60px;
+    }
+
+    /* =============================================
+       page intro
+    ============================================= */
+    .page-intro {
+      margin-bottom: 28px;
+    }
+
+    .page-intro h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1e2540;
+      margin-bottom: 6px;
+    }
+
+    .page-intro p {
+      color: #5a6282;
+      font-size: 14px;
+    }
+
+    /* =============================================
+       info strip - current program
+    ============================================= */
+    .info-strip {
+      background: #eef2ff;
+      border: 1.5px solid #c7d0ff;
+      border-radius: 10px;
+      padding: 14px 20px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: #3a4480;
+    }
+
+    .info-strip .icon { font-size: 18px; }
+
+    .info-strip strong {
+      color: #4361ee;
+      font-weight: 700;
+    }
+
+    /* =============================================
+       section titles
+    ============================================= */
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8890b5;
+      margin-bottom: 12px;
+    }
+
+    /* =============================================
+       card
+    ============================================= */
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1.5px solid #dde4ff;
+      box-shadow: 0 2px 12px rgba(67, 97, 238, 0.07);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      padding: 16px 22px;
+      border-bottom: 1.5px solid #eef0ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e2540;
+    }
+
+    .stat-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 20px;
+    }
+
+    .chip-total   { background: #eef2ff; color: #4361ee; }
+    .chip-passed  { background: #e6faf4; color: #1a9a6f; }
+    .chip-nope    { background: #fff0f0; color: #d94f4f; }
+
+    /* =============================================
+       tables
+    ============================================= */
+    .table-wrap {
+      overflow-x: auto;
+      max-height: 440px;
+      overflow-y: auto;
+    }
+
+    .table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+    .table-wrap::-webkit-scrollbar-track { background: #f5f7ff; }
+    .table-wrap::-webkit-scrollbar-thumb { background: #c7d0ff; border-radius: 4px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: #f6f8ff;
+      padding: 11px 18px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #8890b5;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      border-bottom: 1.5px solid #dde4ff;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #eef0ff;
+      transition: background 0.12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f6f8ff; }
+
+    tbody td {
+      padding: 10px 18px;
+      font-size: 14px;
+      color: #2d3461;
+    }
+
+    .row-num {
+      color: #bec4dc;
+      font-size: 12px;
+      width: 30px;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-yes { background: #e6faf4; color: #1a9a6f; }
+    .badge-no  { background: #fff0f0; color: #d94f4f; }
+
+    .na-text    { color: #bec4dc; font-style: italic; }
+    .equiv-text { color: #4361ee; font-weight: 600; }
+
+    /* =============================================
+       transfer controls
+    ============================================= */
+    .controls {
+      background: #fff;
+      border: 1.5px solid #dde4ff;
+      border-radius: 14px;
+      padding: 24px 22px;
+      box-shadow: 0 2px 12px rgba(67, 97, 238, 0.07);
+      margin-bottom: 24px;
+    }
+
+    .controls h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #1e2540;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #5a6282;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #dde4ff;
+      border-radius: 9px;
+      background: #f6f8ff;
+      color: #1e2540;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238890b5' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color 0.2s;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #4361ee;
+      background-color: #fff;
+    }
+
+    .btn-transfer {
+      background: #4361ee;
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 11px 26px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-transfer:hover { background: #3451d1; }
+    .btn-transfer:active { transform: scale(0.97); }
+
+    /* validation shake */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+
+    .shake { animation: shake 0.35s ease; }
+
+    /* =============================================
+       equivalency result
+    ============================================= */
+    #result-section {
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #result-section.show { display: block; }
+
+    .result-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .result-heading h2 { font-size: 16px; font-weight: 700; }
+
+    .arrow-label {
+      background: #4361ee;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 20px;
+    }
+
+    .result-stats {
+      display: flex;
+      gap: 10px;
+      padding: 12px 22px;
+      background: #f6f8ff;
+      border-bottom: 1.5px solid #eef0ff;
+      font-size: 13px;
+      color: #5a6282;
+      flex-wrap: wrap;
+    }
+
+    .result-stats span { font-weight: 700; color: #4361ee; }
+
+    /* =============================================
+       footer
+    ============================================= */
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: #bec4dc;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- navbar -->
+  <nav class="navbar">
+    <a class="logo" href="#">
+      <div class="logo-icon">🗺️</div>
+      <span class="logo-text">Credit<span>Map</span></span>
+    </a>
+    <span class="tagline">Transfer Planner</span>
+  </nav>
+
+  <div class="container">
+
+    <!-- intro -->
+    <div class="page-intro">
+      <h1>Plan Your Program Transfer 📋</h1>
+      <p>See which of your completed courses count toward a different program before you switch.</p>
+    </div>
+
+    <!-- current program -->
+    <div class="info-strip">
+      <span class="icon">🎓</span>
+      <span>Your current program: <strong>Computer Science</strong></span>
+    </div>
+
+    <!-- course table -->
+    <div class="section-title">My Courses</div>
+    <div class="card">
+      <div class="card-header">
+        <h2>All Courses</h2>
+        <div class="stat-chips" id="stat-chips"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="row-num">#</th>
+              <th>Course Name</th>
+              <th>Passed</th>
+            </tr>
+          </thead>
+          <tbody id="course-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- controls -->
+    <div class="section-title">Transfer Options</div>
+    <div class="controls">
+      <h2>Where do you want to transfer? 🏫</h2>
+      <div class="controls-row">
+        <div class="field">
+          <label for="program-select">Target Program</label>
+          <select id="program-select">
+            <option value="">— pick one —</option>
+            <option value="CE">Computer Engineering</option>
+            <option value="CivilE">Civil Engineering</option>
+            <option value="EEE">Electrical and Electronics Engineering</option>
+          </select>
+        </div>
+        <button class="btn-transfer" onclick="doTransfer()">Transfer →</button>
+      </div>
+    </div>
+
+    <!-- result -->
+    <div id="result-section">
+      <div class="section-title">Equivalency Table</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="result-heading">
+            <h2>Computer Science</h2>
+            <span class="arrow-label">→</span>
+            <h2 id="result-program-name"></h2>
+          </div>
+        </div>
+        <div class="result-stats" id="result-stats"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="row-num">#</th>
+                <th>Your CS Course</th>
+                <th>Equivalent in Target Program</th>
+              </tr>
+            </thead>
+            <tbody id="result-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">CreditMap v1.0 &nbsp;·&nbsp; made for CS 2025 assignment</div>
+
+  </div>
+
+  <script>
+
+    // ── course data ───────────────────────────────────────────────
+
+    const courses = [
+      { name: "Academic Writing and Research Skills",    passed: true  },
+      { name: "Introduction to Computer Science",        passed: true  },
+      { name: "Calculus I",                              passed: true  },
+      { name: "Discrete Mathematics",                    passed: true  },
+      { name: "Programming Fundamentals",                passed: true  },
+      { name: "Calculus II",                             passed: true  },
+      { name: "Linear Algebra",                          passed: true  },
+      { name: "Object-Oriented Programming",             passed: true  },
+      { name: "Data Structures and Algorithms",          passed: true  },
+      { name: "Probability and Statistics",              passed: true  },
+      { name: "Computer Architecture",                   passed: true  },
+      { name: "Database Systems",                        passed: true  },
+      { name: "Web Development",                         passed: true  },
+      { name: "Physics I",                               passed: false },
+      { name: "Operating Systems",                       passed: false },
+      { name: "Computer Networks",                       passed: false },
+      { name: "Software Engineering",                    passed: false },
+      { name: "Artificial Intelligence",                 passed: false },
+      { name: "Machine Learning",                        passed: false },
+      // 5 extra courses - always marked Yes
+      { name: "Compiler Design",                         passed: true  },
+      { name: "Computer Graphics",                       passed: true  },
+      { name: "Cybersecurity Fundamentals",              passed: true  },
+      { name: "Cloud Computing",                         passed: true  },
+      { name: "Mobile Application Development",          passed: true  },
+    ];
+
+    const programNames = {
+      CE:     "Computer Engineering",
+      CivilE: "Civil Engineering",
+      EEE:    "Electrical and Electronics Engineering",
+    };
+
+    const equiv = {
+      CE: {
+        "Academic Writing and Research Skills":  "Technical Communication",
+        "Introduction to Computer Science":      "Introduction to Engineering",
+        "Calculus I":                            "Calculus I",
+        "Discrete Mathematics":                  "Discrete Mathematics",
+        "Programming Fundamentals":              "Introduction to Programming",
+        "Calculus II":                           "Calculus II",
+        "Linear Algebra":                        "Linear Algebra",
+        "Object-Oriented Programming":           "N/A",
+        "Data Structures and Algorithms":        "Data Structures",
+        "Probability and Statistics":            "Probability and Statistics",
+        "Computer Architecture":                 "Computer Organization and Architecture",
+        "Database Systems":                      "N/A",
+        "Web Development":                       "N/A",
+        "Compiler Design":                       "N/A",
+        "Computer Graphics":                     "Computer Graphics",
+        "Cybersecurity Fundamentals":            "Network Security",
+        "Cloud Computing":                       "N/A",
+        "Mobile Application Development":        "N/A",
+      },
+      CivilE: {
+        "Academic Writing and Research Skills":  "Technical Writing",
+        "Introduction to Computer Science":      "N/A",
+        "Calculus I":                            "Engineering Mathematics I",
+        "Discrete Mathematics":                  "N/A",
+        "Programming Fundamentals":              "N/A",
+        "Calculus II":                           "Engineering Mathematics II",
+        "Linear Algebra":                        "Linear Algebra",
+        "Object-Oriented Programming":           "N/A",
+        "Data Structures and Algorithms":        "N/A",
+        "Probability and Statistics":            "Statistics for Engineers",
+        "Computer Architecture":                 "N/A",
+        "Database Systems":                      "N/A",
+        "Web Development":                       "N/A",
+        "Compiler Design":                       "N/A",
+        "Computer Graphics":                     "Engineering Drawing and CAD",
+        "Cybersecurity Fundamentals":            "N/A",
+        "Cloud Computing":                       "N/A",
+        "Mobile Application Development":        "N/A",
+      },
+      EEE: {
+        "Academic Writing and Research Skills":  "Technical Communication",
+        "Introduction to Computer Science":      "N/A",
+        "Calculus I":                            "Calculus I",
+        "Discrete Mathematics":                  "Discrete Mathematics for Engineers",
+        "Programming Fundamentals":              "Introduction to Programming",
+        "Calculus II":                           "Calculus II",
+        "Linear Algebra":                        "Linear Algebra",
+        "Object-Oriented Programming":           "N/A",
+        "Data Structures and Algorithms":        "N/A",
+        "Probability and Statistics":            "Probability and Statistics",
+        "Computer Architecture":                 "Digital Systems Design",
+        "Database Systems":                      "N/A",
+        "Web Development":                       "N/A",
+        "Compiler Design":                       "N/A",
+        "Computer Graphics":                     "N/A",
+        "Cybersecurity Fundamentals":            "Information Security",
+        "Cloud Computing":                       "N/A",
+        "Mobile Application Development":        "N/A",
+      },
+    };
+
+    // ── render course table on load ───────────────────────────────
+
+    function renderCourses() {
+      const tbody = document.getElementById('course-tbody');
+      courses.forEach((c, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="row-num">${i + 1}</td>
+          <td>${c.name}</td>
+          <td><span class="badge ${c.passed ? 'badge-yes' : 'badge-no'}">${c.passed ? 'Yes' : 'No'}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const total  = courses.length;
+      const passed = courses.filter(c => c.passed).length;
+      document.getElementById('stat-chips').innerHTML = `
+        <span class="chip chip-total">${total} total</span>
+        <span class="chip chip-passed">${passed} passed ✓</span>
+        <span class="chip chip-nope">${total - passed} not yet</span>
+      `;
+    }
+
+    // ── transfer button handler ───────────────────────────────────
+
+    function doTransfer() {
+      const sel = document.getElementById('program-select');
+      if (!sel.value) {
+        sel.classList.remove('shake');
+        void sel.offsetWidth;
+        sel.classList.add('shake');
+        sel.style.borderColor = '#f87171';
+        setTimeout(() => {
+          sel.style.borderColor = '';
+          sel.classList.remove('shake');
+        }, 600);
+        return;
+      }
+
+      const key    = sel.value;
+      const map    = equiv[key];
+      const passed = courses.filter(c => c.passed);
+      const rows   = passed.map(c => ({ from: c.name, to: map[c.name] ?? "N/A" }));
+      const found  = rows.filter(r => r.to !== "N/A").length;
+
+      document.getElementById('result-program-name').textContent = programNames[key];
+
+      document.getElementById('result-stats').innerHTML = `
+        Courses evaluated: <span>${passed.length}</span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        Equivalents found: <span>${found}</span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        No equivalent: <span>${passed.length - found}</span>
+      `;
+
+      const tbody = document.getElementById('result-tbody');
+      tbody.innerHTML = '';
+      rows.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="row-num">${i + 1}</td>
+          <td>${r.from}</td>
+          <td class="${r.to === 'N/A' ? 'na-text' : 'equiv-text'}">${r.to}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const sec = document.getElementById('result-section');
+      sec.classList.remove('show');
+      void sec.offsetWidth;
+      sec.classList.add('show');
+      sec.style.display = 'block';
+
+      setTimeout(() => sec.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+
+    renderCourses();
+  </script>
+</body>
+</html>
